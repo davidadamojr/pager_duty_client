@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+require "json"
+require "pager_duty/client"
+
+if ENV["TOKEN"].nil?
+  warn "Please set the TOKEN environment variable to your PagerDuty API token."
+  exit
+end
+
+if ARGV.empty?
+  warn "Please provide a service name."
+  warn "USAGE: pager_duty-client [service name]"
+  exit
+end
+
+begin
+  puts JSON.pretty_generate(PagerDuty::Client.new.find_service(ARGV.first))
+rescue PagerDuty::Client::ServiceNotFound => e
+  puts e.message
+end
